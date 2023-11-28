@@ -17,7 +17,7 @@
 # help & licensing
 case "$*" in
   "" | ?"-h" | ?"-help"*)
-    printf '\nThis simple script uses ImageMagick and FFMPEG to corrupt images.\n'
+    printf '\nThis simple script utilizes ImageMagick and FFmpeg to corrupt images. Nothing special.\n'
     printf "\nUsage:\n> $0 image.png *filter*\n\n"
     exit 0
     ;;
@@ -54,7 +54,7 @@ fi
 # checks =======================>
 
 if [ "$2" = "" ]; then
-	printf 'Please chose a corruption engine as a second switch.\nAvailable corruption engines: "bandreject", "highpass", "lowpass".\n'
+	printf 'Please chose a filter as a second switch.\nAvailable filters: "bandreject", "highpass", "lowpass".\n'
 	exit 78
 elif ! [ -f $1 ]; then
 	printf "Input file doesn't exist, is a folder or a special device.\n"
@@ -78,7 +78,7 @@ elif [ "$2" = "lowpass" ]; then
 	printf "Cutoff frequency: " ; read cv1
 	ffcmd="ffmpeg -y -f alaw -i $ucimg -af lowpass=f=$cv1 -f alaw $inter"
 else
-	printf "I don't know this engine!"
+	printf "I don't know this filter!\n"
 	exit 76
 fi
 
