@@ -16,15 +16,12 @@
 
 # help & licensing
 case "$*" in
-  "" | ?"-h" | ?"-help"*)
+  "" | *"-h"* | *"help"*)
     printf '\nThis simple script utilizes ImageMagick and FFmpeg to corrupt images. Nothing special.\n'
     printf "\nUsage:\n> $0 image.png *filter*\n\n"
     exit 0
     ;;
-esac
-
-case "$*" in
-  *"license"* | *"copyright"*)
+  *"licens"* | *"copyright"*)
 	head -n15 $0 | tail -n14 | sed 's/\#//g'
     exit 0
     ;;
