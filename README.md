@@ -1,7 +1,9 @@
 <p align=center>
-    <img src="images/repotitle.png>
+    <img src="images/repotitle.png">
 </p>
+
 -----------
+
 This is a simple image corruptor that utilizes [ImageMagick](https://imagemagick.org/) and [FFmpeg](https://ffmpeg.org/).
 
 # How 2 use dis?
@@ -18,8 +20,8 @@ Every time you corrupt an image, a little piece from the right side gets moved t
 
 # Corrupted Images
 <p>
-    <img src="images/i1.png>
+    <img src="images/i1.png">
 </p>
 <p>
-    <img src="images/i2.png>
+    <img src="images/i2.png">
 </p>
