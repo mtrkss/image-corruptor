@@ -14,7 +14,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-# help & licensing
+# help & licensing =============>
 case "$*" in
   "" | *"-h"* | *"help"*)
     printf '\nThis simple script utilizes ImageMagick and FFmpeg to corrupt images. Nothing special.\n'
@@ -28,7 +28,6 @@ case "$*" in
 esac
 
 # functions =============>
-
 varset() {
 hash=$(sha1sum $1 | head -c10)
 ucimg=/tmp/ucimg-"$hash".bmp
@@ -45,11 +44,7 @@ if [ "$fname".png = "$1" ]; then
 fi
 }
 
-# <============= functions
-
-
 # checks =======================>
-
 if [ "$2" = "" ]; then
 	printf 'Please chose a filter as a second switch.\nAvailable filters: "bandreject", "highpass", "lowpass".\n'
 	exit 78
@@ -66,12 +61,10 @@ elif [ "$2" = "bandreject" ]; then
 	ffcmd="ffmpeg -y -f alaw -i $ucimg -af bandreject=f=$cv1:width_type=h:w=$cv2 -f alaw $inter"
 elif [ "$2" = "highpass" ]; then
 	gfn $1 && varset $1
-	varset $1
 	printf "Cutoff frequency: " ; read cv1
 	ffcmd="ffmpeg -y -f alaw -i $ucimg -af highpass=f=$cv1 -f alaw $inter"
 elif [ "$2" = "lowpass" ]; then
 	gfn $1 && varset $1
-	varset $1
 	printf "Cutoff frequency: " ; read cv1
 	ffcmd="ffmpeg -y -f alaw -i $ucimg -af lowpass=f=$cv1 -f alaw $inter"
 else
@@ -79,11 +72,7 @@ else
 	exit 76
 fi
 
-# <======================= checks
-
-
 # corruption =============>
-
 convert $1 -depth 8 -alpha off $ucimg
 sleep 1
 
@@ -93,16 +82,13 @@ header=$(head -c54 $ucimg | base64)
 # execute the ffmpeg command
 $ffcmd
 
-# restoring the header
+# restore the header
 bytes=$(wc -c $ucimg | awk '{print $1}')
-
 printf $header | base64 -d  > $cimg
 head -c $bytes $inter | tail -c $bytes >> $cimg
 
 convert $cimg "$fname".png
 sleep 1
-
-# <============= corruption
 
 # cleanup & debug info
 if [ "$3" = "debug" ]; then
