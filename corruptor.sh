@@ -14,7 +14,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-# help & licensing =============>
+# help & licensing
 case "$*" in
   "" | *"-h"* | *"help"*)
     printf '\nThis simple script utilizes ImageMagick and FFmpeg to corrupt images. Nothing special.\n'
@@ -76,19 +76,16 @@ fi
 convert $1 -depth 8 -alpha off $ucimg
 sleep 1
 
-# save the header as base64 for later manipulations
-header=$(head -c54 $ucimg | base64)
-
-# execute the ffmpeg command
 $ffcmd
 
-# restore the header
-bytes=$(wc -c $ucimg | awk '{print $1}')
-printf $header | base64 -d  > $cimg
+# restoring the header
+head -c54 $ucimg > $cimg
+bytes=$(expr $(wc -c $ucimg | awk '{print $1}') - 54 ) # this is AWKward (i hate this)
 head -c $bytes $inter | tail -c $bytes >> $cimg
 
+# convert the resulting image to png
+
 convert $cimg "$fname".png
-sleep 1
 
 # cleanup & debug info
 if [ "$3" = "debug" ]; then
