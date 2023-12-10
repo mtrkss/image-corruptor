@@ -4,24 +4,36 @@
 
 -----------
 
-This is a simple image corruptor that utilizes [ImageMagick](https://imagemagick.org/) and [FFmpeg](https://ffmpeg.org/).
+This is a simple image corruptor that utilizes [ImageMagick](https://imagemagick.org/ and [FFmpeg](https://ffmpeg.org/).
+
+# Latest Changelog
+- Changed variable names
+- More filters
+- Fixed a bug with image drifts
 
 # How 2 use dis?
 ```
 ./corruptor.sh help # help
 ./corruptor.sh license # licensing
-./corruptor.sh image *filter* # normal usage 
-./corruptor.sh image *filter* debug # debug info
+./corruptor.sh image <filter> # normal usage 
+./corruptor.sh image <filter> debug # additional debug info
 ```
 
 # Known Bugs
-Probably many because this script has only been tested on FreeBSD, but the only one I know about is image drifting.
-Every time you corrupt an image, a little piece from the right side gets moved to the left one the whole image shifts. This shouldn't happen in theory, but it does.
+Probably many since this script has only been tested on FreeBSD.
 
 # Corrupted Images
+`custom "acrusher=bits=16:samples=12"`
 <p>
     <img src="images/i1.png">
 </p>
+`custom "acrusher=bits=16:samples=200:mix=0.1"`
 <p>
     <img src="images/i2.png">
 </p>
+
+# TODO
+- Ability to specify variables through switches
+- MORE FILTERS!
+- SoX filters?
+- Different raw image formats?
