@@ -7,7 +7,6 @@
 This is a simple image corruptor that utilizes [ImageMagick](https://imagemagick.org/ and [FFmpeg](https://ffmpeg.org/).
 
 # Latest Changelog
-- Changed variable names
 - More filters
 - Fixed a bug with image drifts
 
@@ -27,13 +26,14 @@ Probably many since this script has only been tested on FreeBSD.
 <p>
     <img src="images/i1.png">
 </p>
+
 `custom "acrusher=bits=16:samples=200:mix=0.1"`
 <p>
     <img src="images/i2.png">
 </p>
 
 # TODO
-- Ability to specify variables through switches
+- Ability to specify variables and output file through switches
 - MORE FILTERS!
 - SoX filters?
 - Different raw image formats?
