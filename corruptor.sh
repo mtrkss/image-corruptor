@@ -46,7 +46,7 @@ fi
 
 # checks =======================>
 if [ "$2" = "" ]; then
-	printf 'Please chose a filter as a second switch. Available filters:\nbandreject, highpass, lowpass, compressor, custom.\n'
+	printf 'Please chose a filter as a second switch. Available filters:\nbandreject, highpass, lowpass, contrast, custom.\n'
 	exit 78
 elif ! [ -f $1 ]; then
 	printf "Input file doesn't exist, is a folder or a special device.\n"
