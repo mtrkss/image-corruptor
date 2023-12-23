@@ -7,16 +7,27 @@
 This is a simple image corruptor that utilizes [ImageMagick](https://imagemagick.org/ and [FFmpeg](https://ffmpeg.org/).
 
 # Latest Changelog
-- Changed variable names
-- More filters
-- Fixed a bug with image drifts
+- Almost everything rewritten. I already forgot what got added.
+- Ability to specify variables through switches
+- Custom fiilter
 
-# How 2 use dis?
+# How 2 use dis? (yep, this is just the help message.)
 ```
-./corruptor.sh help # help
-./corruptor.sh license # licensing
-./corruptor.sh image <filter> # normal usage 
-./corruptor.sh image <filter> debug # additional debug info
+Informational:
+ --help		Show this help message
+ --license	Self-explanatory
+ --debug	Debug info
+ 
+Script Usage:
+ -i=<input>
+ -o=<output>
+ -f=<filter>
+ -s=<filter args>
+ 
+Examples:
+$ ./corruptor.sh -i=input.png -o=output.png -f=custom -s="acrusher=bits=16:samples=64"
+
+$ ./corruptor.sh -i=input.png -o=output.png -f=lowpass -s=7000
 ```
 
 # Known Bugs
@@ -33,7 +44,7 @@ Probably many since this script has only been tested on FreeBSD.
 </p>
 
 # TODO
-- Ability to specify variables through switches
-- MORE FILTERS!
+- ~~Ability to specify variables through switches~~ *Done!*
+- ~~MORE FILTERS!~~ *Proper custom filter implemented!*
 - SoX filters?
 - Different raw image formats?
