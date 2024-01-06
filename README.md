@@ -7,9 +7,7 @@
 This is a simple image corruptor that utilizes [ImageMagick](https://imagemagick.org/ and [FFmpeg](https://ffmpeg.org/).
 
 # Latest Changelog
-- Almost everything rewritten. I already forgot what got added.
-- Ability to specify variables through switches
-- Custom fiilter
+- Fixed a broken error message.
 
 # How 2 use dis? (yep, this is just the help message.)
 ```

@@ -134,7 +134,7 @@ if [ -z "$input" ]; then
 	error "I need an input image!" 66
 elif [ -z "$filter" ]; then
 	error "Please choose a filter as the -f= option. Available filters:
-bandreject, highpass, lowpass, contrast, custom." 78
+highpass, lowpass, custom." 78
 else
 	getfile "$input"
 	if [ -z "$output" ]; then
