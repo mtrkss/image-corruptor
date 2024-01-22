@@ -36,6 +36,7 @@ Probably many since this script has only been tested on FreeBSD.
 <p>
     <img src="images/i1.png">
 </p>
+
 `custom "acrusher=bits=16:samples=200:mix=0.1"`
 <p>
     <img src="images/i2.png">
