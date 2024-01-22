@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2023 Alexey Laurentsyeu, All rights reserved.
+# Copyright (c) 2023, 2024 Alexey Laurentsyeu, All rights reserved.
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 # 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
 # 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
@@ -97,7 +97,7 @@ fi
 }
 
 rval(){
-printf "reject frequency? " && read fv1
+printf "Filter frequency: " && read fv1
 }
 
 # HELL... ====================>
@@ -153,7 +153,7 @@ $ffcmd
 
 # restoring the header
 head -c54 $ucimg > $cimg
-bytes=$(expr $(wc -c $inter | awk '{print $1}') - 54) # this is AWKward
+bytes=$(expr $(wc -c $inter | awk '{print $1}') - 54)
 tail -c $bytes $inter >> $cimg
 
 # convert the resulting image to png
