@@ -4,7 +4,7 @@
 
 -----------
 
-This is a simple image corruptor that utilizes [ImageMagick](https://imagemagick.org/ and [FFmpeg](https://ffmpeg.org/).
+This is a simple image corruptor that utilizes [ImageMagick](https://imagemagick.org/) and [FFmpeg](https://ffmpeg.org/).
 
 # Latest Changelog
 - Fixed a broken error message.
