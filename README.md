@@ -19,9 +19,9 @@ This is a simple image corruptor that utilizes [ImageMagick](https://imagemagick
 - Added complex filters
 - Added lavfi filters
 - Better debug message
-- Added complete Android (termux) support
-- 
+- Added Android (termux) support
 - Now using a separate directory in /tmp for temporary files
+- More...
 </details>
 
 # How 2 use dis?
