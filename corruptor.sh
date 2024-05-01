@@ -14,49 +14,54 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-unset input output filter cset imgfmt format arate complex debug lavfi alpha depth
+unset input output filter imgfmt format rate complex debug lavfi alpha depth limit
 
-format=alaw # format for ffmpeg (changing this WILL cause even more corruption)
-arate=44100
+format=alaw
+rate=44100
 depth=8
 hsize=54
 
-if [ "$(uname -o)" = Android ] || [ "$(uname -o)" = Toybox ] # only use quotes for uname to treat the whole output as a single string
+if [ "$(uname -o)" = Android ] || [ "$(uname -o)" = Toybox ]
 then tmpdir=./tmp
 else tmpdir=/tmp/imgcorrupt
 fi
 
 # help & licensing
 case "$*" in
-	"" | *-"hel"*) cat <<stob
+	"" | *-"hel"*) cat <<EOF
 
-Files:
- -i=<input>
- -o=<output>
- -au=<complex audio input>
- 
-Corruption:
- -f=<filter>
- -s=<filter args>
- -d=<intermediate image bit depth>
- -a=<intermediate audio format>
- -r=<intermediate audio frequency>
+"image-corruptor.sh" is a simple POSIX Shell script for adding glitch effects to images e.g. corrupting them.
+The corruption process utilizes ImageMagick, FFmpeg and Coreutils.
 
-Other:
- --help		Show this help message
- --license	Self-explanatory
- --debug	Debug info, don't delete temp files
- --lavfi	Presume lavfi -au format
- --alpha	Enable image alpha channel
- --limit	Limit the amount of processed raw output bytes (helps with conversion errors)
+Options:
 
-Examples:
-$ $0 -i=input.png -o=output.png -f=lowpass -s=7000
-$ $0 -i=input.png -o=output.png -f=custom -s="acrusher=bits=16:samples=64:mix=0.2,lowpass=f=7000,volume=-2dB"
+ VAR     SWITCH    FUNCTION
+ input   (-i=)     - Input file
+ output  (-o=)     - Output file
+ filter  (-f=)     - FFmpeg audio filter
+ complex (-c=)     - Complex FFmpeg audio input
+ depth   (-d=)     - Image depth
+ format  (-a=)     - Intermediate audio format
+ rate    (-r=)     - Intermediate audio rate
+ src     (-s=)     - File with predefined variables
+ debug   (--debug) - Enable simple debug info
+ lavfi   (--lavfi) - Presume lavfi -au format
+ alpha   (--alpha) - Enable image alpha channel
+ limit   (--limit) - Limit processed bytes to input image size (raw)
 
-stob
-exit 0 ;;
-	*"licens"*) sed -n '2,15{s/^#//;p}' $0;exit 0 ;;
+Info:
+
+ complex - Second FFmpeg input
+ filter  - See https://ffmpeg.org/ffmpeg-filters.html
+ format  - See "ffmpeg -formats"
+ limit   - Use a different algorhithm for restoring file headers, limiting the raw output filesize to the raw input filesize.
+ alpha   - Enable the alpha channel.
+ lavfi   - Only use if you know what you\`re doing. Use with -c
+ debug   - Don\`t delete temporary files, print out all the set variables and halt the script midway for inspection.
+
+EOF
+exit ;;
+  *"licens"*) sed -n '2,15{s/^#//;p}' $0; exit ;;
 esac
 
 # set some variables
@@ -66,147 +71,132 @@ local args="$*"
 
 # loop through each arg
 for arg in $args; do
-	case $arg in
-		-i=*) input="${arg#*=}" ;;
-		-o=*) output="${arg#*=}" ;;
-		-f=*) filter="${arg#*=}" ;;
-		-s=*) cset="${arg#*=}" ;;
-		-a=*) format="${arg#*=}" ;;
-		-r=*) arate="${arg#*=}" ;;
-		-d=*) depth="${arg#*=}" ;;
-		-au=*) complex="${arg#*=}" ;;
-		--debug) debug=y ;;
-		--lavfi) lavfi=y ;;
-		--alpha) alpha=y ;;
-		--limit) limit=y ;;
-		*) ;;  # ignore any other args
-	esac
+  case $arg in
+    -i=*) input="${arg#*=}" ;;
+    -o=*) output="${arg#*=}" ;;
+    -f=*) filter="${arg#*=}" ;;
+    -a=*) format="${arg#*=}" ;;
+    -r=*) rate="${arg#*=}" ;;
+    -d=*) depth="${arg#*=}" ;;
+    -c=*) complex="${arg#*=}" ;;
+    -s=*) src="${arg#*=}" ;;
+    --debug) debug=y ;;
+    --lavfi) lavfi=y ;;
+    --alpha) alpha=y ;;
+   --limit) limit=y ;;
+    *) ;;  # ignore any other args
+  esac
 done
 }
 switches "$*"
 
-# functions ==================>
+# functions
 varset() {
-hash=$(md5sum "$1"|head -c10)
+hash=$(shasum "$1"|head -c10)
 ucimg=${tmpdir}/ucimg-$hash.bmp
 cimg=${tmpdir}/cimg-$hash.bmp
 inter=${tmpdir}/inter-$hash.raw
 }
 
 error() {
-printf "Error: $1\n"
-exit "$2"
+printf 'Error: %s\n' "$*"
+exit 1
 }
 
 getfile() {
 file="$1"
 if [ ! -f "$file" ]; then
-	error "Input file doesn't exist, is a folder, or a special device." 66
+  error "Input file doesn't exist, is a folder, or a special device." 66
 elif ! file -b "$file" | grep -qE 'image|bitmap|pixmap'; then
-	error "Input file is not an image." 66
+  error "Input file is not an image." 66
 fi
 varset "$file"
 }
 
 debug() {
-cat <<OwO
+cat <<EOF
 Debug info
 
 Internal variables:
-hash>	$hash
-ucimg>	$ucimg
-cimg>	$cimg
-inter>	$inter
-ffcmd>	$ffcmd
+hash>    $hash
+ucimg>	 $ucimg
+cimg>    $cimg
+inter>	 $inter
+ffargs>  $ffargs
 
 User input:
-input>	$input
-output>	$output
-filter>	$filter
-format>	$format
-cset>	$cset
-au> 	$complex
-lavfi>	$lavfi
-arate> 	$arate
-limit>	$limit
-OwO
+input>   $input
+output>  $output
+filter>  $filter
+format>  $format
+complex> $complex
+lavfi>   $lavfi
+rate>    $rate
+limit>   $limit
+
+Press enter...
+EOF
 read nothing
 }
 
-rval() {
-printf "Filter frequency: "
-read fv1
-}
-
 chkapp() {
-printf "Searching for $1...\n"
-which $1 2>/dev/null&&printf "$1 found\n\n"||error "$1 not found! Please install the $2 package." 1
+if which $1 2>/dev/null
+then printf "$1 found\n\n"
+else error "$1 not found! Please install the $2 package."
+fi
 }
 
 ffwrong() {
-printf "FFmpeg exited with a non-0 code!\nContinue? (may be risky) [Y/n]: "
-read ans;echo $ans|grep -E [nN]>/dev/null&&exit 1
+printf "FFmpeg exited with a non-0 code!\nContinue? (may be risky) [y/N]: "
+read ans
+echo $ans | grep -qi y || exit 1
 }
-
-alias cls='[ -z $debug ]&&clear'
 
 chkapp ffmpeg ffmpeg
 chkapp convert ImageMagick
 
-## check for and create a temporary directory
-[ -d "$tmpdir" ] || mkdir "$tmpdir" || error "Can't create a temporary directory!" 1
+[ -d "$tmpdir" ] || mkdir "$tmpdir" || error "Can't create a temporary directory!"
+[ -f "$src" ] && printf "%s\n" "Using $3 to source variables" && . "$3"
 
-# aeugh
-ffset() {
-fv1="$cset"
-if [ -z $complex ]
-then basecmd="ffmpeg -y -f $format -ar $arate -i $ucimg -af"
-else basecmd="ffmpeg -y -f $format -ar $arate -i $ucimg $([ ! -z $lavfi ]&&printf %s"-f lavfi") -i $complex -filter_complex"
+if [ -z "$input" ]
+then error "I need an input image!"
+else getfile "$input"
 fi
 
-[ -z "$fv1" ] && [ "$filter" != custom ] && rval
+if [ -z "$output" ]
+then
+output="${hash}.png"
+printf "Output not specified! Defaulting to $(pwd)/${output}\n"
+fi
 
-case "$filter" in
-	"highpass") ffcmd="$basecmd volume=-0.15dB,highpass=f=$fv1 -f $format $inter" ;;
-	"lowpass") ffcmd="$basecmd volume=-0.15dB,lowpass=f=$fv1 -f $format $inter" ;;
-	"custom") if [ ! -z "$cset" ]; then ffcmd="$basecmd $cset -f $format $inter"; else error 'Please specify a filter and its settings.\nExample: -s="acrusher=bits=16:samples=64:mix=0.2"' 78; fi ;;
-		*) error "I don't know this filter!" 76 ;;
-esac
-}
-# setting the ffcmd
-if [ -z "$input" ]; then
-	error "I need an input image!" 66
-elif [ -z "$filter" ]; then
-	error "Please choose a filter as the -f= option. Available filters:
-highpass, lowpass, custom." 78
-else
-	getfile "$input"
-	if [ -z "$output" ]; then
-		output="${hash}.png"
-		printf "Output not specified! Defaulting to $(pwd)/${output}\n"
-	fi
-	ffset
+if [ -z "$filter" ]
+then error "Please add an ffmpeg audio filter as the -f= option." "Docs: https://ffmpeg.org/ffmpeg-filters.html" "Example: -f=acrusher=bits=16:samples=64:mix=0.2"
+elif [ -z "$complex" ]
+then ffargs="-y -f $format -ar $rate -i $ucimg -af $filter -f $format $inter"
+else ffargs="-y -f $format -ar $rate -i $ucimg $([ -z $lavfi ]||printf %s-f\ lavfi) -i $complex -filter_complex $filter -f $format $inter"
 fi
 
 # corruption
 [ ! -z $debug ] && printf "Everything correct here?\n" && debug
-convert "$input" -depth $depth -alpha $([ -z $alpha ]&&printf %soff||printf %son) $ucimg
+convert "$input" -depth $depth -alpha $([ -z $alpha ] && printf %soff || printf %son) $ucimg
 
-$ffcmd || ffwrong && cls
+echo ffmpeg $ffargs || ffwrong
+ffmpeg $ffargs || ffwrong
 
-## restoring the header
-head -c$hsize $ucimg>$cimg
-if [ ! -z $limit ]
-then tail -c+$(($hsize+1)) $inter|head -c$(($(wc -c<$ucimg)-$hsize))>>$cimg
-else tail -c $(($(wc -c<$inter)-$hsize)) $inter>>$cimg
+# restoring the header
+head -c$hsize $ucimg > $cimg
+if [ -z $limit ]
+then tail -c$(($(wc -c<$inter) - $hsize)) $inter >> $cimg
+else tail -c+$(($hsize + 1)) $inter | head -c$(($(wc -c<$ucimg) - $hsize)) >> $cimg 
 fi
 
-## convert the resulting image to png
+# convert the resulting image
 convert $cimg "$output"
 
 # cleanup & debug info
 if [ ! -z $debug ]
 then debug
-else printf "Cleaning up...\n"
-	 rm -rv "$tmpdir" && printf "Done\n\n"
+else
+	printf "Cleaning up...\n"
+	rm -rv "$tmpdir" && printf "Done\n\n"
 fi

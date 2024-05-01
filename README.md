@@ -7,22 +7,10 @@
 This is a simple image corruptor that utilizes [ImageMagick](https://imagemagick.org/) and [FFmpeg](https://ffmpeg.org/).
 
 # Latest Changelog
-<details>
-	<summary>TOO. MUCH.</summary>
 
-- Merged video-corruptor features
-- Added adjustable image bitdepth
-- Added adjustable ffmpeg corruption arate
-- Added optional alpha channel
-- Added a second image restoration technique used with --limit
-- Added another input file
-- Added complex filters
-- Added lavfi filters
-- Better debug message
-- Added Android (termux) support
-- Now using a separate directory in /tmp for temporary files
-- More...
-</details>
+- Removed "-s="
+- 
+- Cleaned up the script
 
 # How 2 use dis?
 
@@ -35,29 +23,34 @@ This is a simple image corruptor that utilizes [ImageMagick](https://imagemagick
 	<summary>Built-in help message</summary>
 
 ```
-Files:
- -i=<input>
- -o=<output>
- -au=<complex audio input>
- 
-Corruption:
- -f=<filter>
- -s=<filter args>
- -d=<intermediate image bit depth>
- -a=<intermediate audio format>
- -r=<intermediate audio frequency>
+"image-corruptor.sh" is a simple POSIX Shell script for adding glitch effects to images e.g. corrupting them.
+The corruption process utilizes ImageMagick, FFmpeg and Coreutils.
 
-Other:
- --help		Show this help message
- --license	Self-explanatory
- --debug	Debug info, don't delete temp files
- --lavfi	Presume lavfi -au format
- --alpha	Enable image alpha channel
- --limit	Limit the amount of processed raw output bytes (helps with conversion errors)
+Options:
 
-Examples:
-$ ./corruptor.sh -i=input.png -o=output.png -f=lowpass -s=7000
-$ ./corruptor.sh -i=input.png -o=output.png -f=custom -s="acrusher=bits=16:samples=64:mix=0.2,lowpass=f=7000,volume=-2dB"
+ VAR     SWITCH    FUNCTION
+ input   (-i=)     - Input file
+ output  (-o=)     - Output file
+ filter  (-f=)     - FFmpeg audio filter
+ complex (-c=)     - Complex FFmpeg audio input
+ depth   (-d=)     - Image depth
+ format  (-a=)     - Intermediate audio format
+ rate    (-r=)     - Intermediate audio rate
+ src     (-s=)     - File with predefined variables
+ debug   (--debug) - Enable simple debug info
+ lavfi   (--lavfi) - Presume lavfi -au format
+ alpha   (--alpha) - Enable image alpha channel
+ limit   (--limit) - Limit processed bytes to input image size (raw)
+
+Info:
+
+ complex - Second FFmpeg input
+ filter  - See https://ffmpeg.org/ffmpeg-filters.html
+ format  - See "ffmpeg -formats"
+ limit   - Use a different algorhithm for restoring file headers, limiting the raw output filesize to the raw input filesize.
+ alpha   - Enable the alpha channel.
+ lavfi   - Only use if you know what you're doing. Use with -c
+ debug   - Don't delete temporary files, print out all the set variables and halt the script midway for inspection.
 ```
 </details>
 
@@ -85,5 +78,5 @@ If no output file is specified, the name will be generated automatically.
 </p>
 
 # TODO
-- Remove lowpass and highpass. There are too many ffmpeg filters to implement as -f=*.
 - More testing, some features break the output images.
+- Fix mtrkss/video-corruptor
