@@ -9,8 +9,8 @@ This is a simple image corruptor that utilizes [ImageMagick](https://imagemagick
 # Latest Changelog
 
 - Removed "-s="
-- 
 - Cleaned up the script
+- Fixed a possible bug with the image header size
 
 # How 2 use dis?
 
@@ -58,10 +58,11 @@ The simplest way to corrupt an image with this script would be `./corruptor.sh -
 
 If no output file is specified, the name will be generated automatically.
 
-# Tested platforms
+# Tested OSes
 - Arch Linux
 - Void Linux
 - Fedora Linux
+- NixOS
 - FreeBSD
 - Android
 - MacOS (only Apple Silicon tested)
