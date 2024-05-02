@@ -19,7 +19,7 @@ unset input output filter imgfmt format rate complex debug lavfi alpha depth lim
 format=alaw
 rate=44100
 depth=8
-hsize=54
+hsize=138
 
 if [ "$(uname -o)" = Android ] || [ "$(uname -o)" = Toybox ]
 then tmpdir=./tmp
