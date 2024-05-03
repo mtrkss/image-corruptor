@@ -23,7 +23,7 @@ This is a simple image corruptor that utilizes [ImageMagick](https://imagemagick
 	<summary>Built-in help message</summary>
 
 ```
-"image-corruptor.sh" is a simple POSIX Shell script for adding glitch effects to images e.g. corrupting them.
+"image-corruptor" is a simple POSIX Shell script for adding glitch effects to images e.g. corrupting them.
 The corruption process utilizes ImageMagick, FFmpeg and Coreutils.
 
 Options:
@@ -38,7 +38,7 @@ Options:
  rate    (-r=)     - Intermediate audio rate
  src     (-s=)     - File with predefined variables
  debug   (--debug) - Enable simple debug info
- lavfi   (--lavfi) - Presume lavfi -au format
+ lavfi   (--lavfi) - Presume lavfi -c format
  alpha   (--alpha) - Enable image alpha channel
  limit   (--limit) - Limit processed bytes to input image size (raw)
 
@@ -47,10 +47,9 @@ Info:
  complex - Second FFmpeg input
  filter  - See https://ffmpeg.org/ffmpeg-filters.html
  format  - See "ffmpeg -formats"
- limit   - Use a different algorhithm for restoring file headers, limiting the raw output filesize to the raw input filesize.
- alpha   - Enable the alpha channel.
- lavfi   - Only use if you know what you're doing. Use with -c
- debug   - Don't delete temporary files, print out all the set variables and halt the script midway for inspection.
+ limit   - Use a different algorithm for restoring file headers.
+ lavfi   - Only use if you know what you`re doing. Use with -c
+ debug   - Don`t delete temporary files, print out all the set variables and halt the script midway for inspection.
 ```
 </details>
 
