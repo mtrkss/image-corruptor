@@ -7,17 +7,15 @@
 This is a simple image corruptor that utilizes [ImageMagick](https://imagemagick.org/) and [FFmpeg](https://ffmpeg.org/).
 
 # Latest Changelog
-
-- Removed "-s="
-- Cleaned up the script
-- Fixed a possible bug with the image header size
+- Added proper OpenBSD support
+- Added support for non-gnu OSes
 
 # How 2 use dis?
 
-1. Install FFmpeg and ImageMagick with your package manager
-2. Run the script with `sh corruptor.sh` on Android or `./corruptor.sh` on other platforms.
+1. Install the self explanatory dependencies
+2. Run the script with `sh corruptor.sh` on Android or `./corruptor.sh` on other platforms
 
-(you may need to `chmod +x corruptor.sh` first before running)
+The only dependencies are FFmpeg, ImageMagick and POSIX commands such as head, tail and sed
 
 <details>
 	<summary>Built-in help message</summary>
@@ -31,40 +29,50 @@ Options:
  VAR     SWITCH    FUNCTION
  input   (-i=)     - Input file
  output  (-o=)     - Output file
- filter  (-f=)     - FFmpeg audio filter
+ filter  (-f=)     - FFmpeg audio filter (see ffmpeg.org/ffmpeg-filters.html)
  complex (-c=)     - Complex FFmpeg audio input
- depth   (-d=)     - Image depth
- format  (-a=)     - Intermediate audio format
+ format  (-a=)     - Intermediate audio format (see "ffmpeg -formats")
  rate    (-r=)     - Intermediate audio rate
+ imargs  (-m=)     - Additional ImageMagick arguments
  src     (-s=)     - File with predefined variables
  debug   (--debug) - Enable simple debug info
- lavfi   (--lavfi) - Presume lavfi -c format
- alpha   (--alpha) - Enable image alpha channel
- limit   (--limit) - Limit processed bytes to input image size (raw)
+ lavfi   (--lavfi) - Use lavfi complex input format
+ alpha   (--alpha) - Enable alpha channel
+ nolim   (--nolim) - Use an older image restoration alghorhithm
 
-Info:
-
- complex - Second FFmpeg input
- filter  - See https://ffmpeg.org/ffmpeg-filters.html
- format  - See "ffmpeg -formats"
- limit   - Use a different algorithm for restoring file headers.
- lavfi   - Only use if you know what you`re doing. Use with -c
- debug   - Don`t delete temporary files, print out all the set variables and halt the script midway for inspection.
+To test if everything works you can do
+ $ convert -size 300x300 gradient:white-gray -rotate 45 /tmp/some.png
+ $ ./corruptor.sh -i=/tmp/some.png -f=earwax,aecho -o=output.png
+You should get a corrupted, stripey image from this.
 ```
+
 </details>
 
 The simplest way to corrupt an image with this script would be `./corruptor.sh -i=input.png -f=lowpass`
 
 If no output file is specified, the name will be generated automatically.
 
-# Tested OSes
-- Arch Linux
-- Void Linux
-- Fedora Linux
-- NixOS
-- FreeBSD
+# Technical
+<details>
+	<summary>Tested OSes</summary>
+
 - Android
-- MacOS (only Apple Silicon tested)
+- MacOS
+- Haiku OS
+- FreeBSD
+- OpenBSD
+- Linux (Arch, NixOS, Alpine, Fedora)
+</details>
+
+
+<details>
+	<summary>UNtested (but probably working) OSes</summary>
+
+- NetBSD
+- MirBSD
+- Windows (With Cygwin or MSYS)
+
+</details>
 
 # Corrupted Images
 `custom "acrusher=bits=16:samples=12"`
