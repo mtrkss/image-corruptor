@@ -27,7 +27,7 @@ tail=tail
 case "$*" in
 	"" | *-"hel"*) cat <<EOF>&2
 
-"image-corruptor" is a simple POSIX Shell script for adding glitch effects to images e.g. corrupting them.
+"image-corruptor" is a simple POSIX Shell script for adding glitch effects to images (corrupting them).
 The corruption process utilizes ImageMagick, FFmpeg and Coreutils.
 
 Options:
@@ -56,7 +56,7 @@ exit ;;
  	*"licens"*) sed -n 's/#//g;2,15p' $0; exit ;;
 esac
 
-for arg in $*; do case $arg in
+for arg in "$@"; do case "$arg" in
 	-i=*) input="${arg#*=}" ;;
 	-o=*) output="${arg#*=}" ;;
 	-f=*) filter="${arg#*=}" ;;
@@ -139,7 +139,7 @@ echo $ans | grep -qi y || exit 1
 }
 
 chkapp ffmpeg ffmpeg
-chkapp convert imagemagick
+chkapp magick imagemagick
 
 # rough multiplatform fix
 if [ "$(uname -o 2>/dev/null)" = Android ]; then
@@ -207,20 +207,20 @@ if ! [ -d $tmpdir ]; then
 	mkdir $tmpdir || error "Can't create a temporary directory!"
 fi
 
-convert "$input" $imargs -alpha $([ -z $alpha ] && printf %soff || printf %son) $ucimg
+magick "$input" $imargs -alpha $([ -z $alpha ] && printf %soff || printf %son) $ucimg
 
 ffmpeg $ffargs || ffwrong
 
 # restoring the image
 $head -c$hsize $ucimg > $cimg
 if [ -z $nolim ]; then
-	$tail -c+$(($hsize + 1)) $inter | $head -c$(($(wc -c<$ucimg) - $hsize)) >> $cimg 
+	$tail -c+$((hsize + 1)) $inter | $head -c$(($(wc -c<$ucimg) - hsize)) >> $cimg 
 else
-	$tail -c$(($(wc -c<$inter) - $hsize)) $inter >> $cimg
+	$tail -c$(($(wc -c<$inter) - hsize)) $inter >> $cimg
 fi
 
 # convert the resulting image
-convert $cimg $imargs "$output"
+magick $cimg $imargs "$output"
 
 # cleanup & debug info
 if [ ! -z $debug ]; then

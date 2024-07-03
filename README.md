@@ -58,12 +58,12 @@ If no output file is specified, the name will be generated automatically.
 
 - Android
 - MacOS
-- Haiku OS
+- Haiku (needs binary ffmpeg)
 - FreeBSD
 - OpenBSD
 - Linux (Arch, NixOS, Alpine, Fedora)
-</details>
 
+</details>
 
 <details>
 	<summary>UNtested (but probably working) OSes</summary>
@@ -75,12 +75,12 @@ If no output file is specified, the name will be generated automatically.
 </details>
 
 # Corrupted Images
-`custom "acrusher=bits=16:samples=12"`
+`aecho`
 <p>
     <img src="images/i1.png">
 </p>
 
-`custom "acrusher=bits=16:samples=200:mix=0.1"`
+`acrusher=bits=16:samples=200:mix=0.1`
 <p>
     <img src="images/i2.png">
 </p>
